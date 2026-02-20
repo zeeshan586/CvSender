@@ -1,6 +1,6 @@
 let constants = {
-    senderName: 'Muhammad Zeeshan Farooq',
-    senderEmail: "zeeshanfarooq637@gmail.com",
+    senderName: 'Zeeshan Farooq',
+    senderEmail: "@gmail.com",
     subject: "Software Engineer",
     fileName: "resume.pdf",
     contentType: "application/pdf",
@@ -10,7 +10,7 @@ let constants = {
     host: "smtp.gmail.com",
     service: 'gmail',
     unsentEmails: 'unsent.json',
-    password: "oqhz fkmy ycgl nqpe"
+    password: ""
 }
 
 
