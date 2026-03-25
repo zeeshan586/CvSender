@@ -1,49 +1,73 @@
 const companyAndEmails = require('./excelReader')
 const { sendMail, loadEmails } = require('./email')
 const fs = require('fs')
+const path = './unsent.json'
 
-const PROGRESS_FILE = 'progress.json'
-const UNSENT_FILE = 'unsent.json'
+///For Node Mailer
+const sendUnsentEmails = async () => {
 
-// Load last progress
-let lastIndex = 0
-if (fs.existsSync(PROGRESS_FILE)) {
-    lastIndex = JSON.parse(fs.readFileSync(PROGRESS_FILE)).lastIndex
-}
+    const dataBuffer = fs.readFileSync('currentUnsent.json')
+    const dataJSON = dataBuffer.toString()
+    const a = JSON.parse(dataJSON)
 
-// Helper to save progress
-const saveProgress = (index) => {
-    fs.writeFileSync(PROGRESS_FILE, JSON.stringify({ lastIndex: index }))
-}
+    let count = 0
+    let check
 
-// Send emails with resume functionality
-const sendEmails = async () => {
-    for (let i = lastIndex; i < companyAndEmails.length; i++) {
-        const company = companyAndEmails[i]
+    for (let i = 0; i < companyAndEmails.length; i++) {
+        check = a.find((company) => company.name == companyAndEmails[i].companyName)
 
-        try {
-            if (company.allEmails.length > 1) {
-                const email = company.allEmails.shift()
-                await sendMail(company.companyName, email, company.allEmails)
-            } else {
-                await sendMail(company.companyName, company.allEmails)
-            }
+        if (companyAndEmails[i].allEmails.length > 1 && check != undefined) {
+            // console.log(check.name)
+            count = count + 1
+            const email = companyAndEmails[i].allEmails.shift()
+            await sendMail(companyAndEmails[i].companyName, email, companyAndEmails[i].allEmails)
 
-            console.log(`Sent: ${company.companyName}`)
-            saveProgress(i + 1) // Save after each successful company
-
-        } catch (err) {
-            console.log(`Error sending to ${company.companyName}:`, err)
-            console.log('Stopping to respect Gmail limit or failure.')
-
-            // Save remaining unsent emails
-            const unsent = companyAndEmails.slice(i)
-            fs.writeFileSync(UNSENT_FILE, JSON.stringify(unsent, null, 2))
-            break // stop sending
         }
+        else if (companyAndEmails[i].allEmails.length == 1 && check != undefined) {
+            count = count + 1
+            await sendMail(companyAndEmails[i].companyName, companyAndEmails[i].allEmails)
+        }
+
     }
 
-    console.log('Email sending done for today.')
+
+}
+const sendAllEmails = async () => {
+    let count = 0
+    let check
+
+    for (let i = 0; i < companyAndEmails.length; i++) {
+        if (companyAndEmails[i].allEmails.length > 1) {
+
+            const email = companyAndEmails[i].allEmails.shift()
+            await sendMail(companyAndEmails[i].companyName, email, companyAndEmails[i].allEmails)
+            console.log(companyAndEmails[i].companyName)
+        }
+        else if (companyAndEmails[i].allEmails.length == 1) {
+            await sendMail(companyAndEmails[i].companyName, companyAndEmails[i].allEmails)
+            console.log(companyAndEmails[i].companyName)
+        }
+
+    }
+
+
 }
 
-sendEmails()
+
+
+//To see the the list of faied sent emails
+// a=loadEmails()
+// console.log(a.length)
+// bcc=[]
+
+
+if (fs.existsSync(path)) {
+    fs.rename('unsent.json', 'currentUnsent.json', (err) => { })
+    sendUnsentEmails().then((data) => {
+        console.log("deleted")
+        fs.unlinkSync('currentUnsent.json')
+    })
+}
+else {
+    sendAllEmails()
+}

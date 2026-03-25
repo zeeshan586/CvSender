@@ -2,7 +2,7 @@ const XLSX = require('xlsx')
 const book = XLSX.readFile("Software-Houses.xlsx")
 const constants = require('./Constants')
 
-let sheet = book.Sheets[book.SheetNames[1]]
+let sheet = book.Sheets[book.SheetNames[0]]
 let email
 let companyAndEmails = []
 let list = []
