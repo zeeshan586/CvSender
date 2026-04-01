@@ -7,6 +7,8 @@ const getEmailBody = require('./EmailBody')
 pathToAttachment = `${__dirname}/${constants.fileName}`
 attachment = fs.readFileSync(pathToAttachment).toString("base64")
 
+const pathToCoverLetter = `${__dirname}/${constants.coverLetterFileName}`
+const coverLetterAttachment = fs.readFileSync(pathToCoverLetter).toString("base64")
 
 const transporter = nodemailer.createTransport({
     host: constants.host,
@@ -33,6 +35,12 @@ const sendMail = async (companyName, email, bccE) => {
                 filename: constants.filename,
                 contentType: constants.contentType,
                 path: constants.filePath
+            },
+            {
+                content: coverLetterAttachment,
+                filename: constants.coverLetterFileName,
+                contentType: constants.coverLetterContentType,
+                path: constants.coverLetterPath
             }
         ]
     }
