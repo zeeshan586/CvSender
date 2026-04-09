@@ -4,8 +4,8 @@ const constants = require('./Constants')
 const getEmailBody = require('./EmailBody')
 
 
-pathToAttachment = `${__dirname}/${constants.fileName}`
-attachment = fs.readFileSync(pathToAttachment).toString("base64")
+const pathToAttachment = `${__dirname}/${constants.fileName}`
+const attachment = fs.readFileSync(pathToAttachment).toString("base64")
 
 const pathToCoverLetter = `${__dirname}/${constants.coverLetterFileName}`
 const coverLetterAttachment = fs.readFileSync(pathToCoverLetter).toString("base64")
